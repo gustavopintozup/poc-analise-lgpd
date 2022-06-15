@@ -16,34 +16,41 @@ public class ParsingHandoraClass {
     public static void main(String[] args) {
 
         Launcher spoon = new Launcher();
+        //todo: parametrizar isso no futuro
         spoon.addInputResource(
                 "/home/gustavopinto/workspace/plataforma-treino-lms/src/main/java/br/com/zup/lms/alunos/Aluno.java");
 
         spoon.buildModel();
         CtModel model = spoon.getModel();
 
-        for (CtType aluno : model.getAllTypes()) {
-            if (aluno.getAnnotation(Entity.class) != null) {
-                System.out.println("É uma classe de acesso a banco!");
+        for (CtType clazz : model.getAllTypes()) {
+            if (clazz.getAnnotation(Entity.class) != null) {
+                System.out.println("A classe '" + clazz.getSimpleName() +  "' classe de acesso a banco!");
             }
         }
 
-        List<CtField> fields = model.filterChildren(new TypeFilter<>(CtField.class)).list();
+        List<CtField> fields = model
+                                .filterChildren(new TypeFilter<>(CtField.class))
+                                .list();
         for (CtField field : fields) {
-            boolean contemDadosSensiveis = Arrays.stream(Vocabulario.sensiveis).anyMatch(field.getSimpleName()::contains);
+            boolean contemDadosSensiveis = Arrays
+                                            .stream(Vocabulario.sensiveis)
+                                            .anyMatch(field.getSimpleName()::contains);
             if(contemDadosSensiveis) {
-                System.out.println("Atributo com dado sensível encontrado: " + field.getSimpleName());
+                System.out.println("Possível attr sensível encontrado: " + field.getSimpleName());
 
             }
         }
 
-        System.out.println("\nMETHODS");
-        List<CtMethod> methods = model.filterChildren(new TypeFilter<>(CtMethod.class)).list();
+        List<CtMethod> methods = model
+                                    .filterChildren(new TypeFilter<>(CtMethod.class))
+                                    .list();
         for (CtMethod method : methods) {
-            boolean contemDadosSensiveis = Arrays.stream(Vocabulario.sensiveis).anyMatch(method.getSimpleName().toLowerCase()::contains);
+            boolean contemDadosSensiveis = Arrays
+                                            .stream(Vocabulario.sensiveis)
+                                            .anyMatch(method.getSimpleName().toLowerCase()::contains);
             if(contemDadosSensiveis) {
-                System.out.println("Metodo com dado sensível encontrado: " + method.getSimpleName());
-
+                System.out.println("Possível método sensível encontrado: " + method.getSimpleName());
             }
         }
 
